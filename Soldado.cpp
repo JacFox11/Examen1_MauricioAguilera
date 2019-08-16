@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <bits/stdc++.h>
 #include <string.h>
+#include<typeinfo>
 using namespace std;
 
 #ifndef Soldado_CPP
@@ -47,9 +48,11 @@ class Soldado{
 			this->ataque=ataque;
 		}
 		
-		virtual int atacar()=0;
+		virtual int Atacar()=0;
 		
-		virtual void defensa()=0;
+		virtual void Defensa()=0;
+		
+		virtual void print()=0;
 		
 		~Soldado(){
 		}

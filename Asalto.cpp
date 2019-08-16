@@ -9,7 +9,7 @@ using namespace std;
 #define Asalto_CPP
 
 class Asalto : public Soldado{
-	protected:
+	private:
 		int velocidad;
 		int extra;
 		
@@ -38,20 +38,24 @@ class Asalto : public Soldado{
 			this->extra=extra;
 		}
 		
-		int atacar(Soldado* op){
-			if (typeid(*op)== typeid(Asalto)){
+		int Atacar(Soldado* op){
+			if (typeid(op)== typeid(Asalto)){
 				return ataque * 10;
 			}else{
 				return ataque * (10 +(velocidad*2));
 			}
 		}
 		
-		void defensa(Soldado* op, int atk){
+		void Defensa(Soldado* op, int atk){
 			if (typeid(*op)== typeid(Asalto)){
 				vida=vida- atk;
 			}else{
 				vida=vida- (atk/extra);
 			}
+		}
+		
+		void print(){
+			cout<<nombre<<", Vida: "<<vida<<", Ataque: "<<ataque<<", Fuerza extra: "<<extra<<", Velocidad: "<<velocidad<<endl;
 		}
 		
 		~Asalto(){
