@@ -4,7 +4,7 @@
 #include "Asalto.cpp"
 #include "Soporte.cpp"
 
-vector <Soldado*> llamar();
+int llamar();
 string token(string, string, int);
 int func(string);
 void listar();
@@ -122,7 +122,7 @@ void llamar(int team){
 	linea=token(linea,"&", team);
 	while (linea.size() >= c2){
 		if (token(linea, "/",c1)=="Asalto"){
-			equipo1.push_back(new Asalto());
+			equipo1.push_back(new Asalto(1, 1));
 			c2+=token(linea,"/", c1).size();
 		}else{
 			equipo1.push_back(new Soporte());
@@ -150,5 +150,9 @@ int func(string num){
 	
 	convert << strnum1;
 	convert>>num1;
+	
+	convert.str("");
+	convert.clear();
+	
 	return num1;
 }
