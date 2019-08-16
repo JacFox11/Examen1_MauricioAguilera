@@ -30,11 +30,11 @@ class Soporte : public Soldado{
 			this->blindaje=blindaje;
 		}
 		
-		int getcamuflaje(){
+		int getCamuflaje(){
 			return camuflaje;
 		}
 		
-		void setcamuflaje(int camuflaje){
+		void setCamuflaje(int camuflaje){
 			this->camuflaje=camuflaje;
 		}
 		

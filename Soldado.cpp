@@ -48,11 +48,11 @@ class Soldado{
 			this->ataque=ataque;
 		}
 		
-		virtual int Atacar()=0;
+		/*virtual int Atacar()=0;
 		
 		virtual void Defensa()=0;
 		
-		virtual void print()=0;
+		virtual void print()=0;*/
 		
 		~Soldado(){
 		}

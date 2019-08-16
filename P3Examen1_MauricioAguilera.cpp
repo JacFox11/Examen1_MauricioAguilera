@@ -4,7 +4,7 @@
 #include "Asalto.cpp"
 #include "Soporte.cpp"
 
-int llamar();
+void llamar(int);
 string token(string, string, int);
 int func(string);
 void listar();
@@ -14,6 +14,8 @@ vector <Soldado*> equipo2;
 
 int main(){
 	char op='0';
+	llamar(1);
+	llamar(2);
 	while (op!='3'){
 		system("cls");
 		cout<<"...:::MENU PRINCIPAL:::..."<<endl;
@@ -24,38 +26,79 @@ int main(){
 		cin>>op;
 		switch (op){
 			case '1':{
-				listar();
+				cout<<"Equipo 1:"<<endl;
+				for (int i=0; i<equipo1.size() ; i++){
+					if (typeid(*equipo1.at(i) ) == typeid(Asalto)){
+						((Asalto*)equipo1.at(i))->print();
+					}else{
+						((Soporte*)equipo1.at(i))->print();
+					}
+				}
+				cout<<endl<<"Equipo 2:"<<endl;
+				for (int i=0; i<equipo2.size() ; i++){
+					if (typeid(*equipo2.at(i) ) == typeid(Asalto)){
+						((Asalto*)equipo2.at(i))->print();
+					}else{
+						((Soporte*)equipo2.at(i))->print();
+					}
+				}
 				system("pause");
 				break;
 			}
 			case '2':{
 				int x=2;
-				while (equipo1.size() >0 && equipo2.size() >0){
+				while (equipo1.size() >1 && equipo2.size() >1){
 					if (x==2){
 						x=1;
 					}else{
 						x=2;
 					}
 					if (x==1){
+						srand(time(0));
 						int p=(rand() % (equipo1.size()))-1;
+						srand(time(0));
 						int p2=(rand() % equipo2.size())-1;
-						((Asalto*)equipo2.at(p2))->Defensa(equipo1.at(p), ((Asalto*)equipo1.at(p))->Atacar(equipo2.at(p2) ));
+						if (typeid(*equipo1.at(p) ) == typeid(Asalto)){
+							((Asalto*)equipo2.at(p2))->Defensa(equipo1.at(p), ((Asalto*)equipo1.at(p))->Atacar(equipo2.at(p2) ));
+						}else{
+							((Soporte*)equipo2.at(p2))->Defensa(equipo1.at(p), ((Asalto*)equipo1.at(p))->Atacar(equipo2.at(p2) ));
+						}
+						
 						if (equipo2.at(p2)->getVida() <=0){
-							cout<<"Se ha eliminado "<<equipo2.at(p2)->getNombre()<<" del equipo 2"<<endl;
 							equipo2.erase(equipo2.begin() + p2);
-							system("pause");  
 						}
 					}else{
+						srand(time(0));
 						int p=(rand() % equipo2.size())-1;
+						srand(time(0));
 						int p2=(rand() % equipo1.size())-1;
+						if (typeid(*equipo1.at(p) ) == typeid(Asalto)){
+							((Asalto*)equipo1.at(p2))->Defensa(equipo2.at(p), ((Asalto*)equipo2.at(p))->Atacar(equipo1.at(p2) ));
+						}else{
+							((Soporte*)equipo1.at(p2))->Defensa(equipo2.at(p), ((Asalto*)equipo2.at(p))->Atacar(equipo1.at(p2) ));
+						}
 						((Asalto*)equipo1.at(p2))->Defensa(equipo2.at(p), ((Asalto*)equipo2.at(p))->Atacar(equipo1.at(p2) ));
 						if (equipo1.at(p2)->getVida() <=0){
-							cout<<"Se ha eliminado "<<equipo1.at(p2)->getNombre()<<" del equipo 1"<<endl;
-							equipo1.erase(equipo2.begin() + p2);
-							system("pause");  
+							equipo1.erase(equipo1.begin() + p);
 						}
 					}
 				}
+				ofstream escribir;
+				escribir.open("./Ganadador.txt",ios::app);
+				if (x==1){
+					escribir<<"Ha ganado el equipo 1"<<endl;
+					for (int i=0; i<equipo1.size() ; i++){
+						escribir<<equipo1.at(i)->getNombre()<<", "<<equipo1.at(i)->getVida()<<setw(10)<<equipo1.at(i)->getAtaque()<<endl;   
+					}
+					
+				}else{
+					escribir<<"Ha ganado el equipo 2"<<endl;
+					for (int i=0; i<equipo1.size() ; i++){
+						escribir<<equipo2.at(i)->getNombre()<<", "<<equipo2.at(i)->getVida()<<setw(10)<<equipo2.at(i)->getAtaque()<<endl;   
+					}
+				}
+				
+				escribir.close();
 				break;
 			}
 			case '3':{
@@ -120,26 +163,114 @@ void llamar(int team){
 	int c2=1;
 	getline(leer, linea);
 	linea=token(linea,"&", team);
-	while (linea.size() >= c2){
-		if (token(linea, "/",c1)=="Asalto"){
-			equipo1.push_back(new Asalto(1, 1));
-			c2+=token(linea,"/", c1).size();
-		}else{
-			equipo1.push_back(new Soporte());
-			c2+=token(linea,"/", c1).size();
+	if (team==1){
+		while (linea.size() >= c2){
+			if (token(linea, "/",c1)=="Asalto"){
+				equipo1.push_back(new Asalto());
+				c2+=token(linea,"/", c1).size();
+				
+				c1++;
+				equipo1.at(equipo1.size()-1)->setNombre(token(linea, "/", c1));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				equipo1.at(equipo1.size()-1)->setVida(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				equipo1.at(equipo1.size()-1)->setAtaque(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				((Asalto*)equipo1.at(equipo1.size()-1))->setVelocidad(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				((Asalto*)equipo1.at(equipo1.size()-1))->setExtra(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				
+			}else{
+				equipo1.push_back(new Soporte());
+				c2+=token(linea,"/", c1).size()+1;
+				
+				c1++;
+				equipo1.at(equipo1.size()-1)->setNombre(token(linea, "/", c1));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				equipo1.at(equipo1.size()-1)->setVida(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				equipo1.at(equipo1.size()-1)->setAtaque(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				((Soporte*)equipo1.at(equipo1.size()-1))->setBlindaje(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				((Soporte*)equipo1.at(equipo1.size()-1))->setCamuflaje(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+			}
 		}
-		c1++;
-		equipo1.at(equipo1.size()-1)->setNombre(token(linea, "/", c1));
-		c2+=token(linea,"/", c1).size();
-		c1++;
-		
-		equipo1.at(equipo1.size()-1)->setVida(func(token(linea, "/", c1)));
-		c2+=token(linea,"/", c1).size();
-		c1++;
-		
-		equipo1.at(equipo1.size()-1)->setAtaque(func(token(linea, "/", c1)));
-		c2+=token(linea,"/", c1).size();
-		c1++;
+	}else{
+		while (linea.size() >= c2){
+			if (token(linea, "/",c1)=="Asalto"){
+				equipo2.push_back(new Asalto());
+				c2+=token(linea,"/", c1).size();
+				
+				c1++;
+				equipo2.at(equipo2.size()-1)->setNombre(token(linea, "/", c1));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				equipo2.at(equipo2.size()-1)->setVida(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				equipo2.at(equipo2.size()-1)->setAtaque(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+2;
+				c1++;
+				
+				((Asalto*)equipo2.at(equipo2.size()-1))->setVelocidad(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				((Asalto*)equipo2.at(equipo2.size()-1))->setExtra(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				
+			}else{
+				equipo2.push_back(new Soporte());
+				c2+=token(linea,"/", c1).size()+1;
+				
+				c1++;
+				equipo2.at(equipo2.size()-1)->setNombre(token(linea, "/", c1));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				equipo2.at(equipo2.size()-1)->setVida(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				equipo2.at(equipo2.size()-1)->setAtaque(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				((Soporte*)equipo2.at(equipo2.size()-1))->setBlindaje(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+				
+				((Soporte*)equipo2.at(equipo2.size()-1))->setCamuflaje(func(token(linea, "/", c1)));
+				c2+=token(linea,"/", c1).size()+1;
+				c1++;
+			}
+		}
 	}
 }
 
